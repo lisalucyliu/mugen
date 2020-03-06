@@ -1,0 +1,101 @@
+// 3/5/20 -- Draft 1
+// PLEASE NOTE: Photocell handling is incomplete
+// Currently, I am working on integrating the conditions for the button press toggle with the photocell sensing
+// Please check back to this repository later for future code iterations
+boolean toggle1Val = false;
+const int BUTTON1_INPUT_PIN = 2;
+const int BUTTON1_OUTPUT_LED_PIN = 3;
+
+int button1Scored = false;
+int prevButton1State = LOW;
+int passed1 = false;
+
+int photocell1 = 0;
+
+int score = 0;
+int wait = 5;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(BUTTON1_INPUT_PIN, INPUT);
+  pinMode(BUTTON1_OUTPUT_LED_PIN, OUTPUT);
+  digitalWrite(BUTTON1_OUTPUT_LED_PIN, HIGH);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  int photocell = analogRead(A0);
+  //int ledVal = map(photocell, 50, 800, 0, 255);
+  int ledState = digitalRead(BUTTON1_OUTPUT_LED_PIN);
+  Serial.print(photocell);
+  Serial.print(", ");
+  
+  int buttonState = digitalRead(BUTTON1_INPUT_PIN);
+
+  //If laser on the button, should signal PRESS_MEEEEE
+  if(photocell > 950){
+    if(!button1Scored){ // 2 arrays: 1 for scored, 1 for output led pin
+      digitalWrite(BUTTON1_OUTPUT_LED_PIN, LOW);   // turn the LED on (HIGH is the voltage level)
+      //delay(500);                       // wait for a second
+      //digitalWrite(BUTTON1_OUTPUT_LED_PIN, HIGH);    // turn the LED off by making the voltage LOW
+      //delay(500); 
+      // wait for a second
+      ledState = LOW;
+      passed1 = true;
+      Serial.println("passed, ");
+    }
+  } else {
+    if(!button1Scored){
+      digitalWrite(BUTTON1_OUTPUT_LED_PIN, HIGH);
+      ledState = HIGH;
+      passed1 = false;
+      Serial.println("nah, ");
+    }
+  }
+
+  //If button PRESS_MEEEE need to score++ and button should stay on
+  if(ledState == LOW && buttonState == HIGH && passed1 == true) {
+    if(!button1Scored){
+      score++;
+      button1Scored=true;
+      Serial.println("pressed");
+    }
+  }
+//   else {
+//    digitalWrite(BUTTON1_OUTPUT_LED_PIN, HIGH);
+//      ledState = LOW;
+//      passed1 = false;
+//      Serial.println("nah man. ");
+//  }
+  
+  //if laser not on, nothing changes
+
+//  if(prevButton1State != buttonState && buttonState == HIGH){
+//    toggle1Val = !toggle1Val;
+//  }
+
+//  if(toggle1Val == true && ledVal > 260){
+//    // the light is ON
+//    // Because we have the "GND" leg of the button
+//    // hooked up to D3, in order to turn on the built-in
+//    // LED, we have to set D3 to LOW
+//    digitalWrite(BUTTON1_OUTPUT_LED_PIN, LOW);
+//    score ++;
+//  } else {
+//    digitalWrite(BUTTON1_OUTPUT_LED_PIN, HIGH);
+//  }
+
+  // debug
+//  Serial.print(score);
+//  Serial.print(",");
+//  Serial.print(buttonState);
+//  Serial.print(",");
+//  Serial.println(toggle1Val);
+
+  delay(50);
+  prevButton1State = buttonState;
+}
+
+// tips: write function OR write in for loop - 
+// 8 buttons looped for i = 1, until i = 8
